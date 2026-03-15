@@ -1,1 +1,1 @@
-# Spectral-layout-
+To jest projekt celem ktorego jest stworzenie programu co powinien wyznaczać współrzędne węzłów dla "ładnej" wizualizacji grafu planarnego podanego w postaci listy krawędzi algorytmem Fruchterman–Reingold i Spectral layout
