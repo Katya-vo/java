@@ -12,8 +12,8 @@ double weight;
 } edge;
 
 typedef struct{
-Node *nodes;
-Edge *edges;
+node *nodes;
+edge *edges;
 int node_count;
 int edge_count;
 } graph;
