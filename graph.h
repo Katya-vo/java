@@ -7,8 +7,8 @@ double x,y;
 } node;
 
 typedef struct{
-int i,v;
-double weight;
+int s;
+int t;
 } edge;
 
 typedef struct{
