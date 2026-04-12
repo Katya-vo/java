@@ -92,6 +92,30 @@ temp*=0.95;
 free(dx);
 free(dy);
 
+void moc_iteration(double *L,int n,double *vector,int iterations) {
+    for (int i=0;i<n; i++) 
+      vector[i] = (double)rand() / RAND_MAX;
+
+    for (int i=0; i<iterations; i++) {
+        double *next_v = calloc(n, sizeof(double));
+        double norm = 0;
+        for (int i=0;i<n;i++) {
+            for (int j=0;j<n;j++) {
+                next_v[i]+=L[i*n+j]*vector[j];
+            }
+            norm += next_v[i]*next_v[i];
+        }
+        norm = sqrt(norm);
+for (int i=0;i<n;i++) 
+vector[i]=next_v[i]/norm;
+        free(next_v);
+    }
+}
+
+
+
+
+
 void spectral_layout(graph *g){
 if(g==NULL||g->nodes==NULL||g->node_count<2)
   return;
