@@ -70,6 +70,28 @@ dx[v]+=shift_x;
 dy[v]+=shift_y;
 }
 
+for(int i=0;i<n;i++){
+double disp_distance=sqrt(dx[i]*dx[i]+dy[i]*dy[i]);
+if(disp_distance>0){
+double lim_distance=(disp_distance<t)?disp_distance:t;
+g->nodes[i].x+=(dx[i]/disp_distance)*lim_distance;
+g->nodes[i].y+=(dy[i]/disp_distance)*lim_distance;
+}
+
+if(g->nodes[i].x<0)
+  g->nodes[i].x=0;
+if(g->nodes[i].x>width)
+  g->nodes[i].x=width;
+if(f->nodes[i].y<0)
+  g->nodes[i].y<0;
+if(g->nodes[i].y>heighy)
+  g->nodes[i].y=height;
+}
+temp*=0.95;
+}
+free(dx);
+free(dy);
+
 void spectral_layout(graph *g){
 if(g==NULL||g->nodes==NULL||g->node_count<2)
   return;
