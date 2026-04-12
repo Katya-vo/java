@@ -41,7 +41,7 @@ double vx=g->nodes[i].x-  g->nodes[j].x;
 double vy=g->nodes[i].y-  g->nodes[j].y;
 double distance=sqrt(vx*vx+vy*vy);
 if(distance<0.01)
-  dist=0.01;
+  distance=0.01;
 
 
 double f=sila_repuls(distance,k);
@@ -50,7 +50,25 @@ dy[i]+=(vy/distance)*f;
 }
 }
 }
-  
+
+
+fot (int i=0;i<g->edge_count;i++){
+int u=g->edges[i].s;
+int v=g->edges[i].t;
+double vx=g->nodes[u].x - g->nodes[v].x;
+double vy=g->nodes[u].y - g->nodes[v].y;
+double distance=sqrt(vx*vx+vy*vy);
+if(distance<0.01)
+distance=0.01;
+
+double f=sila_attract(distance,k);
+double shift_x=(vx/distance)*f;
+double shift_y=(vy/distance)*f;
+dx[u]-=shift_x;
+dy[u]-=shift_y;
+dx[v]+=shift_x;
+dy[v]+=shift_y;
+}
 
 void spectral_layout(graph *g){
 if(g==NULL||g->nodes==NULL||g->node_count<2)
