@@ -1,3 +1,4 @@
+#include <
 #include <stdlib.h>
 #include <math.h>
 #include "layout.h"
@@ -119,17 +120,39 @@ vector[i]=next_v[i]/norm;
 void spectral_layout(graph *g){
 if(g==NULL||g->nodes==NULL||g->node_count<2)
   return;
+int n=g->node_count;
+    double *L = (double *)calloc(n*n,sizeof(double));
+    if (!L) return;
 
-  double start.x=100.0;
-  double start.y=100.0;
-  doudle koniec.x=300.0;
-  double koniec.y=300.0;
+    for (int i=0;i<g->edge_count;i++) {
+        int u=g->edges[i].u;
+        int v=g->edges[i].v;
+        if (u < n && v < n) {
+            L[u*n+v]= -1.0; 
+            L[v*n+u]= -1.0;
+            L[u*n+u]+= 1.0; 
+            L[v*n+v]+= 1.0;
+        }
+    }
+    double *v2=(double *)malloc(n*sizeof(double));
+    double *v3=(double *)malloc(n*sizeof(double));
 
-double step.x=(koniec.x-start.x)/(g->node_count-1);
-double step.y=(koniec.y-start.y)/(g->node_count-1);
+    
+    for (int i = 0; i < n; i++) {
+        v2[i]=sin(i*2.0* M_PI /n);
+        v3[i]=cos(i*2.0* M_PI /n);
+    }
+    double min_x=100.0;
+    double max_x=300.0;
+    double min_y=100.0;
+    double max_y=300.0;
+    for (int i=0;i<n;i++) {
+        g->nodes[i].x=min_x+(v2[i]+1.0)/2.0*(max_x - min_x);
+        g->nodes[i].y=min_y+(v3[i]+1.0)/2.0*(max_y - min_y);
+    }
 
-for(int i=0;i<g->node_count;i++){
-  g->nodes[i].x=start.x+(i*step.x);
-  g->nodes[i].y=start.y+(i*step.y);
+    free(L);
+    free(v2);
+    free(v3);
 }
 }
