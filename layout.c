@@ -1,7 +1,8 @@
-#include <
+#include <string.h>
 #include <stdlib.h>
 #include <math.h>
 #include "layout.h"
+#include "graph.h"
 
 
 double sila_repuls(double d,double k)
@@ -10,7 +11,7 @@ return(k*k)/d;
 }
 double sila_attract(double d,double k)
 {
-retutn(d*d)/k;
+return(d*d)/k;
 {
 
 void fruchterman_reingold(graph *g,int iterations){
