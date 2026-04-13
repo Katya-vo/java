@@ -156,4 +156,4 @@ int n=g->node_count;
     free(v2);
     free(v3);
 }
-}
+
