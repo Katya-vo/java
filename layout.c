@@ -89,7 +89,7 @@ if(f->nodes[i].y<0)
 if(g->nodes[i].y>heighy)
   g->nodes[i].y=height;
 }
-temp*=0.95;
+t*=0.95;
 }
 free(dx);
 free(dy);
