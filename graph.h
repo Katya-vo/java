@@ -2,7 +2,7 @@
 #define GRAPH_H
 
 typedef struct{
-int id
+int id;
 double x,y;
 } node;
 
@@ -20,3 +20,4 @@ int edge_count;
 
 void free_graph(graph *g);
 void init_graph(graph *g,int n,int e);
+#endif
