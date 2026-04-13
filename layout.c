@@ -54,7 +54,7 @@ dy[i]+=(vy/distance)*f;
 }
 
 
-fot (int i=0;i<g->edge_count;i++){
+for (int i=0;i<g->edge_count;i++){
 int u=g->edges[i].s;
 int v=g->edges[i].t;
 double vx=g->nodes[u].x - g->nodes[v].x;
@@ -139,7 +139,7 @@ int n=g->node_count;
     double *v3=(double *)malloc(n*sizeof(double));
 
     
-    for (int i = 0; i < n; i++) {
+    for (int i=0;i<n;i++) {
         v2[i]=sin(i*2.0* M_PI /n);
         v3[i]=cos(i*2.0* M_PI /n);
     }
