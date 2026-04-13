@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <string.h> 
+#include <string.h>
 
 int main(int argc, char *argv[]) {
     char *input_file = NULL;
@@ -39,6 +39,27 @@ int main(int argc, char *argv[]) {
     printf("plik wejsciowy: %s\n", input_file);
     printf("plik wyjsciowy: %s\n", output_file);
     printf("format zapisu: %s\n", format);
+
+    graph *g = load_graph(input_file); 
+    if (g == NULL) {
+        fprintf(stderr, "Blad: nie udalo sie wczytac grafu\n");
+        return 2;
+    }
+
+    if (algo_type==1) {
+    printf("obliczanie algorytmem fruchterman-reingold\n");
+    } 
+    else if (algo_type==2) {
+    printf("obliczanie algorytmem spectral layout\n");
+    spectral_layout(g);
+    }
+    
+    if (save_graph(g, output_file, format) != 0) {
+        fprintf(stderr,"blad zapisywania do pliku %s\n", output_file);
+        free_graph(g);
+        return 3;
+    }
+    free_graph(g);
   
     if (algo_type==1) {
         printf("algorytm:fruchterman-reingold\n");
