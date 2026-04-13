@@ -9,7 +9,6 @@ double x,y;
 typedef struct{
 int s;
 int t;
-double weight;
 } edge;
 
 typedef struct{
