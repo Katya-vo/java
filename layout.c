@@ -33,7 +33,7 @@ g->nodes[i].y=(double)(rand()%300);
 
 double *dx=calloc(n,sizeof(double));
 double *dy=calloc(n,sizeof(double));
-for(int i=0;i<iterations;i++){
+for(int it=0;it<iterations;it++){
 for(int i=0;i<n;i++){
 dx[i]=0;
 dy[i]=0;
@@ -85,7 +85,7 @@ if(g->nodes[i].x<0)
 if(g->nodes[i].x>width)
   g->nodes[i].x=width;
 if(g->nodes[i].y<0)
-  g->nodes[i].y<0;
+  g->nodes[i].y=0;
 if(g->nodes[i].y>height)
   g->nodes[i].y=height;
 }
@@ -93,12 +93,13 @@ t*=0.95;
 }
 free(dx);
 free(dy);
+}
 
 void moc_iteration(double *L,int n,double *vector,int iterations) {
     for (int i=0;i<n; i++) 
       vector[i] = (double)rand() / RAND_MAX;
 
-    for (int i=0; i<iterations; i++) {
+    for (int it=0; it<iterations; it++) {
         double *next_v = calloc(n, sizeof(double));
         double norm = 0;
         for (int i=0;i<n;i++) {
