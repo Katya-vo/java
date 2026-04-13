@@ -49,19 +49,29 @@ int main(int argc, char *argv[]) {
     }
 
     int n, e;
-    if (fscanf(fin, "%d %d", &n, &e) != 2) {
-        fprintf(stderr,"blad:niewlasciwy format pliku \n");
+    if (fscanf(fin,"%d %d",&n,&e)!= 2) {
+        fprintf(stderr, "blad:niewlasciwy format pliku \n");
         fclose(fin);
         return 2;
     }
 
+    graph *g = malloc(sizeof(graph)); 
+    init_graph(g, n, e); 
+    for (int i = 0; i < e; i++) {
+        fscanf(fin,"%d %d",&(g->edges[i].s), &(g->edges[i].t));
+    }
+    fclose(fin); 
+
 if (algo_type == 1) {
         printf("obliczanie algorytmem fruchterman-reingold\n");
         fruchterman_reingold(g,100);
+}
     else if (algo_type==2) {
         printf("obliczanie algorytmem spectral layout\n");
         spectral_layout(g);
-    } else {
+    } 
+    else
+    {
         fprintf(stderr,"nieznany algorytm %d\n", algo_type);
         free_graph(g);
         free(g);
@@ -69,15 +79,15 @@ if (algo_type == 1) {
     }
 
     FILE *fout = fopen(output_file, "w");
-    if (fout == NULL) {
+    if (fout==NULL) {
         fprintf(stderr, "blad zapisyвания do pliku %s\n", output_file);
         free_graph(g);
         free(g);
         return 3;
     }
 
-    for (int i = 0; i < g->node_count; i++) {
-        fprintf(fout, "%f %f\n", g->nodes[i].x, g->nodes[i].y);
+    for (int i=0; i<g->node_count; i++) {
+        fprintf(fout,"%f %f\n",g->nodes[i].x,g->nodes[i].y);
     }
         fclose(fout);
         free_graph(g);
