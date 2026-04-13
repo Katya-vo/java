@@ -1,4 +1,4 @@
-#include "writer.h"
+#include "write.h"
 #include <stdio.h>
 
 int savetxt(const char *filename,graph *g){
