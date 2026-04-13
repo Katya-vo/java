@@ -126,8 +126,8 @@ int n=g->node_count;
     if (!L) return;
 
     for (int i=0;i<g->edge_count;i++) {
-        int u=g->edges[i].u;
-        int v=g->edges[i].v;
+        int u=g->edges[i].s;
+        int v=g->edges[i].t;
         if (u < n && v < n) {
             L[u*n+v]= -1.0; 
             L[v*n+u]= -1.0;
