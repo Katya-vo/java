@@ -12,7 +12,7 @@ return(k*k)/d;
 double sila_attract(double d,double k)
 {
 return(d*d)/k;
-{
+}
 
 void fruchterman_reingold(graph *g,int iterations){
   if(g==NULL||g->nodes==NULL)
@@ -84,9 +84,9 @@ if(g->nodes[i].x<0)
   g->nodes[i].x=0;
 if(g->nodes[i].x>width)
   g->nodes[i].x=width;
-if(f->nodes[i].y<0)
+if(g->nodes[i].y<0)
   g->nodes[i].y<0;
-if(g->nodes[i].y>heighy)
+if(g->nodes[i].y>height)
   g->nodes[i].y=height;
 }
 t*=0.95;
