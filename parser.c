@@ -1,21 +1,28 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "graph.h"
 #include "parser.h"
 
 int readgraph(const char *filename,graph *g) {
-  FILE *f=fopen(filename,"r");
-if(f==NULL) 
-return 1;
+    FILE *f=fopen(filename,"r");
+    if (f==NULL) {
+    return 1;
+    }
 
-int edge_count=0;
-char buff[100];
+    int n;
+    int e;
+ 
+    if (fscanf(f,"%d %d",&n,&e) != 2) {
+        fclose(f);
+    return 1;
+    }
+    init_graph(g,n,e);
+    for (int i=0;i<e;i++) {
+    if (fscanf(f,"%d %d",&g->edges[i].s,&g->edges[i].t)!= 2) {
+            break; 
+        }
+    }
 
-init_graph(g,edge_count+1,edge_count);
-
-rewind(f);
-for(int i=0;i<edge_count;i++){
-  fscanf(f,"%*s %d %d %lf",&g->edges[i].s,&g->edges[i].t,&g->edges[i].weight);
-  }
-fclose(f);
-return 0;
+    fclose(f);
+    return 0;
 }
