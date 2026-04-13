@@ -1,4 +1,4 @@
-#include <graph.h>
+#include "graph.h"
 #ifndef LAYOUT_H
 #define LAYOUT_H
 void fruchterman_reingold(graph *g,int i);
