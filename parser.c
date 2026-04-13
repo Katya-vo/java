@@ -13,8 +13,8 @@ char buff[100];
 init_graph(g,edge_count+1,edge_count);
 
 rewind(f);
-for(int i=0;i<edge_count,i++){
-  fscanf(f,"%*s %d %d %lf",&g->edges[i].u,&g->edges[i].v,&g->edges[i].weight);
+for(int i=0;i<edge_count;i++){
+  fscanf(f,"%*s %d %d %lf",&g->edges[i].s,&g->edges[i].t,&g->edges[i].weight);
   }
 fclose(f);
 return 0;
