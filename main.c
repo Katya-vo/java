@@ -4,6 +4,7 @@
 #include <string.h>
 #include "graph.h"
 #include "layout.h"
+#include "parser.h"
 
 int main(int argc,char *argv[]) {
     char *input_file=NULL;
