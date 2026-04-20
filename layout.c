@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "layout.h"
 #include "graph.h"
-
+#include "math.h"
 
 double sila_repuls(double d,double k)
 {
