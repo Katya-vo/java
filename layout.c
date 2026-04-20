@@ -1,6 +1,5 @@
 #include <string.h>
 #include <stdlib.h>
-#include <math.h>
 #include "layout.h"
 #include "graph.h"
 
@@ -117,43 +116,52 @@ vector[i]=next_v[i]/norm;
     }
 }
 
+void spectral_layout(graph *g) {
+    if (g==NULL||g->nodes==NULL||g->node_count<3) {
+        return; 
+    }
 
-void spectral_layout(graph *g){
-if(g==NULL||g->nodes==NULL||g->node_count<2)
-  return;
-int n=g->node_count;
-    double *L = (double *)calloc(n*n,sizeof(double));
-    if (!L) return;
+    int n=g->node_count;
+    
+
+    double*L=(double *)calloc(n * n, sizeof(double));
+    if (!L) 
+    return;
 
     for (int i=0;i<g->edge_count;i++) {
         int u=g->edges[i].s;
         int v=g->edges[i].t;
-        if (u < n && v < n) {
-            L[u*n+v]= -1.0; 
-            L[v*n+u]= -1.0;
-            L[u*n+u]+= 1.0; 
-            L[v*n+v]+= 1.0;
+        double w=g->edges[i].weight; 
+
+        if (u<n&&v<n) 
+            L[u*n+v]-=w;
+            L[v*n+u]-=w;
+            L[u*n+u]+=w;
+            L[v*n+v]+=w;
         }
     }
+
     double *v2=(double *)malloc(n*sizeof(double));
-    double *v3=(double *)malloc(n*sizeof(double));
+    double *v3=(double *)malloc(n*sizeof(double));   
+    moc_iteration(L,n,v2,100); 
+    for (int i=0;i<n;i++) v3[i]=(double)rand() / RAND_MAX;
+    moc_iteration(L,n,v3,110); 
 
     
-    for (int i=0;i<n;i++) {
-        v2[i]=sin(i*2.0* M_PI /n);
-        v3[i]=cos(i*2.0* M_PI /n);
-    }
-    double min_x=100.0;
-    double max_x=300.0;
-    double min_y=100.0;
-    double max_y=300.0;
-    for (int i=0;i<n;i++) {
-        g->nodes[i].x=min_x+(v2[i]+1.0)/2.0*(max_x - min_x);
-        g->nodes[i].y=min_y+(v3[i]+1.0)/2.0*(max_y - min_y);
-    }
+    double min_x=0.0; 
+    double min_y=0.0;
+    double max_x=800.0;
+    double max_y=600.0;
 
+    for (int i=0;i<n;i++) {
+        g->nodes[i].x=min_x+(v2[i]+1.0)/2.0*(max_x-min_x);
+        g->nodes[i].y=min_y+(v3[i]+1.0)/2.0*(max_y-min_y);
+    }
     free(L);
     free(v2);
     free(v3);
+}
+
+
 }
 
