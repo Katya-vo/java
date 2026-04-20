@@ -80,7 +80,6 @@ void fruchterman_reingold(graph*g, int iterations) {
                 g->nodes[i].x += (dx[i] / disp_dist) * lim;
                 g->nodes[i].y += (dy[i] / disp_dist) * lim;
             }
-            // Границы экрана
             if (g->nodes[i].x<0) 
             g->nodes[i].x=0;
             if (g->nodes[i].x>width) 
@@ -133,7 +132,7 @@ void spectral_layout(graph *g) {
         int v=g->edges[i].t;
         double w=g->edges[i].weight; 
 
-        if (u<n&&v<n) 
+        if (u<n&&v<n){
             L[u*n+v]-=w;
             L[v*n+u]-=w;
             L[u*n+u]+=w;
@@ -163,5 +162,5 @@ void spectral_layout(graph *g) {
 }
 
 
-}
+
 
