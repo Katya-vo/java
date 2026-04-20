@@ -18,7 +18,7 @@ void fruchterman_reingold(graph*g, int iterations) {
     return;
 
     int n=g->node_count;
-    double width=400.0,
+    double width=400.0;
     double height=300.0;
     double area=width*height;
     double k=sqrt(area/n);
