@@ -9,6 +9,7 @@ double x,y;
 typedef struct{
 int s;
 int t;
+double w;
 } edge;
 
 typedef struct{
