@@ -17,12 +17,12 @@ int readgraph(const char *filename,graph *g) {
     return 1;
     }
     init_graph(g,n,e);
+    char edge_name[10]; 
     for (int i=0;i<e;i++) {
-    if (fscanf(f,"%d %d",&g->edges[i].s,&g->edges[i].t)!= 2) {
-            break; 
+        if (fscanf(f,"%s %d %d %lf",edge_name,&g->edges[i].s,&g->edges[i].t,&g->edges[i].weight)!= 4) {
+            break;
         }
     }
-
     fclose(f);
     return 0;
 }
