@@ -29,7 +29,7 @@ int readgraph(const char *filename,graph *g) {
         return 1;
     }
     int n_count=n+1;
-    init_graph(g,n,e);
+    init_graph(g,n_count,e);
     rewind(f);
     
 for (int i=0;i<e;i++) {
