@@ -30,9 +30,10 @@ public class GraphPanel extends JPanel {
             if (s != null && t != null) g2.draw(new Line2D.Double(s.x, s.y, t.x, t.y));
         }
 
-        g2.setColor(new Color(0, 102, 204));
         for (GraphData.Node node : nodes) {
+            g2.setColor(new Color(0, 102, 204));
             g2.fill(new Ellipse2D.Double(node.x - 6, node.y - 6, 12, 12));
+            g2.setColor(Color.BLACK);
             g2.drawString(String.valueOf(node.id), (int)node.x + 8, (int)node.y);
         }
     }
