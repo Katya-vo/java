@@ -8,6 +8,7 @@ import java.awt.*;
 public class GraphController extends JFrame {
     private final GraphPanel view;
     private final FileParser service; 
+
     public GraphController(GraphPanel view, FileParser service) {
         this.view = view;
         this.service = service;
@@ -15,6 +16,7 @@ public class GraphController extends JFrame {
         setTitle("JIMP2 Graph Visualizer");
         setSize(900, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 
         JButton btn = new JButton("Open C-Generated File");
         btn.addActionListener(e -> {
@@ -24,7 +26,8 @@ public class GraphController extends JFrame {
                     FileParser.GraphContainer data = service.parse(fc.getSelectedFile());
                     view.updateGraph(data.nodes, data.edges);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error: " + ex.getMessage(), 
+                            "File Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
