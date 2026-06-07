@@ -6,15 +6,17 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GraphController extends JFrame {
-    private GraphPanel view = new GraphPanel();
-    private FileParser service = new FileParser();
+    private final GraphPanel view;
+    private final FileParser service; 
+    public GraphController(GraphPanel view, FileParser service) {
+        this.view = view;
+        this.service = service;
 
-    public GraphController() {
-        setTitle("Java Module");
+        setTitle("JIMP2 Graph Visualizer");
         setSize(900, 700);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        JButton btn = new JButton("Open C File");
+        JButton btn = new JButton("Open C-Generated File");
         btn.addActionListener(e -> {
             JFileChooser fc = new JFileChooser();
             if (fc.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -32,6 +34,11 @@ public class GraphController extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new GraphController().setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            GraphPanel graphPanel = new GraphPanel();
+            FileParser fileParser = new FileParser();
+            
+            new GraphController(graphPanel, fileParser).setVisible(true);
+        });
     }
 }
