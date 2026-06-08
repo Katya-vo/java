@@ -1,77 +1,89 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 #include "graph.h"
 #include "layout.h"
-#include "parser.h"
 
-int main(int argc,char *argv[]) {
-    char *input_file=NULL;
-    char *output_file=NULL;
-    char *format="txt"; 
-    int algo_type=1;    
-
-    int opt;
-    while ((opt=getopt(argc,argv,"i:o:a:f:"))!= -1) {
-        switch (opt) {
-            case 'i':
-                input_file=optarg;
-                break;
-            case 'o':
-                output_file=optarg;
-                break;
-            case 'a':
-                algo_type=atoi(optarg);
-                break;
-            case 'f':
-                format=optarg; 
-                break;
-            default:
-                fprintf(stderr,"uzycie: %s -i input -o output -a 1/2 -f txt/bin\n", argv[0]);
-                return 1;
-        }
-    }
-
-    if (input_file==NULL || output_file==NULL) {
-        fprintf(stderr,"brak plika wejsciowego lub wyjsciowego\n");
+int main(int argc, char *argv[])
+{
+    if (argc < 5)
+    {
+        printf("Usage: %s <input.txt> <output> <circle|random><txt|bin>\n", argv[0]);
         return 1;
     }
 
-    graph *g=malloc(sizeof(graph));
-        if (g==NULL) 
+    int n =0;
+    Edge *edges;
+    int *exists = NULL;
+
+    int m = read_graph(argv[1], &edges, &n, &exists);
+
+    if (m <= 0)
+    {
+        printf("Error reading graph\n");
         return 1;
-
-    if (readgraph(input_file,g) != 0) {
-        fprintf(stderr,"blad odczytu pliku %s\n",input_file);
-        free(g);
-        return 2;
     }
-
-    if (algo_type==1) {
-        fruchterman_reingold(g, 100);
-    } else if (algo_type==2) {
-        spectral_layout(g);
-    } else {
-        fprintf(stderr,"nieznany algorytm %d\n", algo_type);
-        free_graph(g);
-        free(g);
-        return 4;
-    }
-
-    int save_status;
-    if (strcmp(format, "bin")==0) {
-        save_status=savebin(output_file, g);
-    } else {
-        save_status=savetxt(output_file, g);
-    }
-
-    if (save_status != 0) {
-        fprintf(stderr,"blad zapisu do pliku %s\n", output_file);
-    }
-
-    free_graph(g);
-    free(g);
-
-    return save_status;
+    
+    double *x = malloc(n * sizeof(double));
+    double *y = malloc(n * sizeof(double));
+    if (x == NULL || y == NULL)
+    { 
+        fprintf(stderr, "Error memmory allocation failed\n");
+        free(edges); 
+	free(exists);
+        if (x) free(x);
+        return 1;
 }
+    
+    if (strcmp(argv[3], "circle") == 0) {
+        circle_layout(x, y, n);
+    } else {
+        random_layout(x, y, n);
+    }
+    
+    if (strcmp(argv[4], "bin") == 0)
+{
+        FILE *out = fopen(argv[2], "wb");
+        if (out) {
+            int actual_v = 0;
+            for (int i = 0; i < n; i++) if (exists[i]) actual_v++;
+
+            fwrite(&actual_v, sizeof(int), 1, out);
+            for (int i = 0; i < n; i++) {
+                if (exists[i]) {
+                    fwrite(&i, sizeof(int), 1, out);                     		    fwrite(&x[i], sizeof(double), 1, out);
+                    fwrite(&y[i], sizeof(double), 1, out);
+                }
+            }
+            fclose(out);
+            printf("Gotowe (BIN)! Zapisano w: %s\n", argv[2]);
+        }
+}
+    else 
+{
+    FILE *out = fopen(argv[2], "w");
+    if(out)
+    {
+        int actual_v = 0;
+            for (int i = 0; i < n; i++) if (exists[i]) actual_v++;
+
+            fprintf(out, "%d\n", actual_v);             
+	    for (int i = 0; i < n; i++)
+            {
+                if (exists[i]) { 
+                    fprintf(out, "%d %.2f %.2f\n", i, x[i], y[i]);
+		}
+            }
+        fclose(out);
+        printf("Ready! \n %s\n", argv[2]);
+    } 
+}
+
+    free(edges);
+    free(exists);
+    free(x);
+    free(y);
+
+    return 0;
+}
+
