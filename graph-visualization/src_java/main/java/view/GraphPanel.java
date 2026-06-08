@@ -55,11 +55,11 @@ public class GraphPanel extends JPanel {
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        // Przesunięcie (0,0) z C na środek okna w Javie
+        // przesunięcie (0,0) z C na środek okna w Javie
         g2.translate(getWidth() / 2.0, getHeight() / 2.0);
         g2.scale(zoomFactor, zoomFactor);
 
-        // Rysowanie połączeń
+        // rysowanie połączeń
         g2.setStroke(new BasicStroke(1.2f));
         for (GraphData.Edge edge : edges) {
             GraphData.Node s = findNode(edge.sourceId);
@@ -79,7 +79,7 @@ public class GraphPanel extends JPanel {
             }
         }
 
-        // Rysowanie wierzchołków
+        // rysowanie wierzchołków
         for (GraphData.Node node : nodes) {
             g2.setColor(new Color(0, 102, 204));
             g2.fill(new Ellipse2D.Double(node.x - 8, node.y - 8, 16, 16));
