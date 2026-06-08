@@ -1,164 +1,27 @@
-#include <string.h>
+#include <math.h>
 #include <stdlib.h>
+#include <time.h>
 #include "layout.h"
-#include "graph.h"
-#include "math.h"
+#ifndef M_PI
+#define M_PI 3.14159
+#endif
 
-double sila_repuls(double d,double k)
-{
-return(k*k)/d;
-}
-double sila_attract(double d,double k)
-{
-return(d*d)/k;
-}
+void circle_layout(double *x, double *y, int n) {
+  double R = 100.0;
 
-void fruchterman_reingold(graph*g, int iterations) {
-    if (g==NULL||g->nodes==NULL) 
-    return;
-
-    int n=g->node_count;
-    double width=400.0;
-    double height=300.0;
-    double area=width*height;
-    double k=sqrt(area/n);
-    double t=width/10.0;
-
-    for (int i=0;i<n;i++) {
-        g->nodes[i].x=(double)(rand()%400);
-        g->nodes[i].y=(double)(rand()%300);
-    }
-
-    double *dx=calloc(n,sizeof(double));
-    double *dy=calloc(n,sizeof(double));
-
-    for (int it = 0; it < iterations; it++) {
-        for (int i=0;i<n;i++) {
-            dx[i]=0;dy[i]=0;
-            for (int j=0;j<n;j++) {
-                if (i!=j) {
-                    double vx=g->nodes[i].x-g->nodes[j].x;
-                    double vy=g->nodes[i].y-g->nodes[j].y;
-                    double distance=sqrt(vx*vx+vy*vy);
-                    if (distance<0.01) 
-                    distance = 0.01;
-                    double f=sila_repuls(distance, k);
-                    dx[i]+=(vx/distance)*f;
-                    dy[i]+=(vy/distance)*f;
-                }
-            }
-        }
-
-
-        for (int i=0;i<g->edge_count;i++) {
-            int u=g->edges[i].s;
-            int v=g->edges[i].t;
-            double weight=g->edges[i].weight; 
-
-            double vx=g->nodes[u].x-g->nodes[v].x;
-            double vy=g->nodes[u].y-g->nodes[v].y;
-            double distance=sqrt(vx * vx + vy * vy);
-            if (distance<0.01) 
-            distance=0.01;
-
-   
-            double f = sila_attract(distance,k)*weight; 
-            
-            double shift_x = (vx/distance)*f;
-            double shift_y = (vy / distance)*f;
-            dx[u]-=shift_x; 
-            dy[u]-=shift_y;
-            dx[v]+=shift_x; 
-            dy[v]+=shift_y;
-        }
-
-     
-        for (int i = 0; i < n; i++) {
-            double disp_dist = sqrt(dx[i] * dx[i] + dy[i] * dy[i]);
-            if (disp_dist > 0) {
-                double lim = (disp_dist < t) ? disp_dist : t;
-                g->nodes[i].x += (dx[i] / disp_dist) * lim;
-                g->nodes[i].y += (dy[i] / disp_dist) * lim;
-            }
-            if (g->nodes[i].x<0) 
-            g->nodes[i].x=0;
-            if (g->nodes[i].x>width) 
-            g->nodes[i].x=width;
-            if (g->nodes[i].y<0)
-            g->nodes[i].y=0;
-            if (g->nodes[i].y>height)
-            g->nodes[i].y =height;
-        }
-        t*=0.95; 
-    }
-    free(dx); 
-    free(dy);
-}
-
-void moc_iteration(double *L,int n,double *vector,int iterations) {
-    for (int i=0;i<n; i++) 
-      vector[i] = (double)rand() / RAND_MAX;
-
-    for (int it=0; it<iterations; it++) {
-        double *next_v = calloc(n, sizeof(double));
-        double norm = 0;
-        for (int i=0;i<n;i++) {
-            for (int j=0;j<n;j++) {
-                next_v[i]+=L[i*n+j]*vector[j];
-            }
-            norm += next_v[i]*next_v[i];
-        }
-        norm = sqrt(norm);
-for (int i=0;i<n;i++) 
-vector[i]=next_v[i]/norm;
-        free(next_v);
+    for (int i = 0; i < n; i++)
+    {
+        double angle = 2.0 * M_PI * i / n;
+        x[i] = R * cos(2 * M_PI * i / n);
+        y[i] = R * sin(2 * M_PI * i / n);
     }
 }
-
-void spectral_layout(graph *g) {
-    if (g==NULL||g->nodes==NULL||g->node_count<3) {
-        return; 
+void random_layout(double *x, double *y, int n) {
+    srand(time(NULL));
+    for (int i = 0; i < n; i++) {
+        x[i] = (rand() % 2000) / 10.0 - 100.0; 
+        y[i] = (rand() % 2000) / 10.0 - 100.0;
     }
-
-    int n=g->node_count;
-    
-
-    double*L=(double *)calloc(n * n, sizeof(double));
-    if (!L) 
-    return;
-
-    for (int i=0;i<g->edge_count;i++) {
-        int u=g->edges[i].s;
-        int v=g->edges[i].t;
-        double w=g->edges[i].weight; 
-
-        if (u<n&&v<n){
-            L[u*n+v]-=w;
-            L[v*n+u]-=w;
-            L[u*n+u]+=w;
-            L[v*n+v]+=w;
-        }
-    }
-
-    double *v2=(double *)malloc(n*sizeof(double));
-    double *v3=(double *)malloc(n*sizeof(double));   
-    moc_iteration(L,n,v2,100); 
-    for (int i=0;i<n;i++) v3[i]=(double)rand() / RAND_MAX;
-    moc_iteration(L,n,v3,110); 
-
-    
-    double min_x=0.0; 
-    double min_y=0.0;
-    double max_x=800.0;
-    double max_y=600.0;
-
-    for (int i=0;i<n;i++) {
-        g->nodes[i].x=min_x+(v2[i]+1.0)/2.0*(max_x-min_x);
-        g->nodes[i].y=min_y+(v3[i]+1.0)/2.0*(max_y-min_y);
-    }
-    free(L);
-    free(v2);
-    free(v3);
 }
 
 
