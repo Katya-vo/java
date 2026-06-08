@@ -98,7 +98,7 @@ public class GraphController extends JFrame {
         }
     }
 
-    private void processGraphInC() {
+private void processGraphInC() {
         if (selectedInputFile == null) {
             JOptionPane.showMessageDialog(this, "Najpierw wybierz plik wejściowy grafu!", "Brak pliku", JOptionPane.WARNING_MESSAGE);
             return;
@@ -109,43 +109,103 @@ public class GraphController extends JFrame {
         String outputFileName = "output_positions." + format;
 
         try {
-            // WYBÓR PLIKU WYKONYWALNEGO (Dostosuj pod Windows/Linux)
+            List<GraphData.Edge> edges = service.parseInputEdges(selectedInputFile);
+            
+            // pobieramy unikalne ID wierzchołków
+            java.util.List<Integer> uniqueNodes = edges.stream()
+                    .flatMapToInt(e -> java.util.stream.IntStream.of(e.sourceId, e.targetId))
+                    .distinct()
+                    .boxed()
+                    .toList();
+            
+            int vCount = uniqueNodes.size();
+            int eCount = edges.size();
+            boolean isPlanar = true;
+            String reason = "";
+
+            // sprawdzanie czy graf jest planarny 
+            if (vCount >= 3 && eCount > (3 * vCount - 6)) {
+                isPlanar = false;
+                reason = "Liczba krawędzi (E=" + eCount + ") przekracza limit dla " + vCount + " wierzchołków (3V-6=" + (3*vCount-6) + ").";
+            }
+
+            
+            if (isPlanar && vCount >= 3) {
+                boolean hasTriangle = false;
+                
+                
+                for (int i = 0; i < uniqueNodes.size(); i++) {
+                    for (int j = i + 1; j < uniqueNodes.size(); j++) {
+                        for (int k = j + 1; k < uniqueNodes.size(); k++) {
+                            int n1 = uniqueNodes.get(i);
+                            int n2 = uniqueNodes.get(j);
+                            int n3 = uniqueNodes.get(k);
+
+                            
+                            if (hasEdge(edges, n1, n2) && hasEdge(edges, n2, n3) && hasEdge(edges, n3, n1)) {
+                                hasTriangle = true;
+                                break;
+                            }
+                        }
+                        if (hasTriangle) break;
+                    }
+                    if (hasTriangle) break;
+                }
+
+                
+                if (!hasTriangle && eCount > (2 * vCount - 4)) {
+                    isPlanar = false;
+                    reason = "Wykryto graf beztrójkątowy (np. dwudzielny K_3,3). Liczba krawędzi (E=" + eCount + ") przekracza limit 2V-4=" + (2*vCount-4) + ".";
+                }
+            }
+
+            
+            if (isPlanar && vCount >= 5) {
+                for (int i = 0; i < uniqueNodes.size(); i++) {
+                    for (int j = i+1; j < uniqueNodes.size(); j++) {
+                        for (int k = j+1; k < uniqueNodes.size(); k++) {
+                            for (int l = k+1; l < uniqueNodes.size(); l++) {
+                                for (int m = l+1; m < uniqueNodes.size(); m++) {
+                                    int n1 = uniqueNodes.get(i), n2 = uniqueNodes.get(j), n3 = uniqueNodes.get(k), n4 = uniqueNodes.get(l), n5 = uniqueNodes.get(m);
+                                    
+                                    if (hasEdge(edges, n1, n2) && hasEdge(edges, n1, n3) && hasEdge(edges, n1, n4) && hasEdge(edges, n1, n5) &&
+                                        hasEdge(edges, n2, n3) && hasEdge(edges, n2, n4) && hasEdge(edges, n2, n5) &&
+                                        hasEdge(edges, n3, n4) && hasEdge(edges, n3, n5) &&
+                                        hasEdge(edges, n4, n5)) {
+                                        isPlanar = false;
+                                        reason = "Wykryto ukrytą strukturę Kuratowskiego K_5 (podgraf pełny 5 wierzchołków).";
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // blokada jak bedzie wykryta nieplanarność
+            if (!isPlanar) {
+                JOptionPane.showMessageDialog(this, 
+                    "Błąd walidacji: Wczytany graf jest NIEPLANARNY!\n" + reason + "\nPrzetwarzanie przerwane.", 
+                    "Wykryto brak planarności", 
+                    JOptionPane.ERROR_MESSAGE);
+                return; 
+            }
+
+            // uruchamiamy C
             String executable = "./graph_viz";
             File exeFile = new File(executable);
             File exeFileWin = new File(executable + ".exe");
-            
-            if (!exeFile.exists() && exeFileWin.exists()) {
-                executable = "./graph_viz.exe";
-            } else if (!exeFile.exists() && !exeFileWin.exists()) {
-                throw new Exception("Nie znaleziono pliku binarnego C ('graph_viz'). Uruchom 'make' w folderze projektu.");
-            }
+            if (!exeFile.exists() && exeFileWin.exists()) executable = "./graph_viz.exe";
+            else if (!exeFile.exists() && !exeFileWin.exists()) throw new Exception("Nie znaleziono pliku binarnego C.");
 
-            // Uruchomienie C z argumentami: <input.txt> <output> <layout> <format>
-            ProcessBuilder pb = new ProcessBuilder(
-                    executable,
-                    selectedInputFile.getAbsolutePath(),
-                    outputFileName,
-                    layout,
-                    format
-            );
-
+            ProcessBuilder pb = new ProcessBuilder(executable, selectedInputFile.getAbsolutePath(), outputFileName, layout, format);
             Process process = pb.start();
             int exitCode = process.waitFor();
-
-            if (exitCode != 0) {
-                throw new Exception("Program w C zakończył się błędem. Kod: " + exitCode);
-            }
+            if (exitCode != 0) throw new Exception("Program w C zakończył się błędem.");
 
             File outputFile = new File(outputFileName);
-            List<GraphData.Node> nodes;
-            
-            if ("bin".equals(format)) {
-                nodes = service.parseOutputBin(outputFile);
-            } else {
-                nodes = service.parseOutputTxt(outputFile);
-            }
-
-            List<GraphData.Edge> edges = service.parseInputEdges(selectedInputFile);
+            List<GraphData.Node> nodes = "bin".equals(format) ? service.parseOutputBin(outputFile) : service.parseOutputTxt(outputFile);
             view.updateGraph(nodes, edges);
 
         } catch (Exception ex) {
@@ -153,7 +213,10 @@ public class GraphController extends JFrame {
         }
     }
 
-    private void initMouseListeners() {
+    private boolean hasEdge(List<GraphData.Edge> edges, int u, int v) {
+        return edges.stream().anyMatch(e -> (e.sourceId == u && e.targetId == v) || (e.sourceId == v && e.targetId == u));
+    }
+        private void initMouseListeners() {
         view.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
