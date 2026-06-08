@@ -16,9 +16,9 @@ public class FileParser {
             if (line == null) return nodes;
             
             line = line.trim();
-            // Jeśli pierwsza linia to pojedyncza liczba, to nagłówek z C - ignorujemy go
+            // pomijanie naglowka z C
             if (!line.contains(" ") && !line.contains("\t")) {
-                // Nagłówek pominięty
+                
             } else {
                 parseNodeLine(line, nodes);
             }
