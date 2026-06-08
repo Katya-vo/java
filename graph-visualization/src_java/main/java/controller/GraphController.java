@@ -35,7 +35,7 @@ public class GraphController extends JFrame {
 
         initMouseListeners();
     }
-
+    // tworzenie paska menu
     private JPanel createTopPanel() {
         JPanel topPanel = new JPanel(new BorderLayout());
         JToolBar toolBar = new JToolBar();
@@ -216,6 +216,7 @@ private void processGraphInC() {
     private boolean hasEdge(List<GraphData.Edge> edges, int u, int v) {
         return edges.stream().anyMatch(e -> (e.sourceId == u && e.targetId == v) || (e.sourceId == v && e.targetId == u));
     }
+        // przesuwanie wierzchołków myszą
         private void initMouseListeners() {
         view.addMouseListener(new MouseAdapter() {
             @Override
@@ -246,7 +247,7 @@ private void processGraphInC() {
             }
         });
     }
-
+    // funkcja uruchomieniowa
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             GraphPanel panel = new GraphPanel();
